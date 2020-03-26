@@ -1,13 +1,21 @@
 package me.Mattq.NokwokSMP;
 
 import me.Mattq.NokwokSMP.commands.*;
+import me.Mattq.NokwokSMP.events.event_scoreboard;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.io.IOException;
 
 public class Main extends JavaPlugin {
     FileConfiguration config = getConfig();
+    private File customConfigFile;
+    private FileConfiguration customConfig;
 
     @Override
     public void onEnable() {
@@ -21,22 +29,36 @@ public class Main extends JavaPlugin {
         this.getCommand("ping").setExecutor(new cmd_ping(this));
         this.getCommand("fly").setExecutor(new cmd_fly(this));
         this.getCommand("announce").setExecutor(new cmd_broadcast(this));
+        createCustomConfig();
+        getServer().getPluginManager().registerEvents(new event_scoreboard(),this);
 
-
-        int num = 1;
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+            boolean st = true;
             public void run() {
-                if (num == 1) {
-                    int num = 2;
+                if (st) {
                     Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&',config.getString("broadcast1")));
-                } else if (num == 2) {
-                    int num = 1;
+                    st = false;
+                } else if (!st) {
                     Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&',config.getString("broadcast2")));
+                    st = true;
                 }
             }
         }, 0L, 20L * 300); //first is delay time, second is repeating time so 5 min.
+    }
 
 
+    private void createCustomConfig() {
+        customConfigFile = new File(getDataFolder(), "rules.yml");
+        if (!customConfigFile.exists()) {
+            customConfigFile.getParentFile().mkdirs();
+            saveResource("rules.yml", false);
+        }
 
+        customConfig= new YamlConfiguration();
+        try {
+            customConfig.load(customConfigFile);
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
     }
 }
