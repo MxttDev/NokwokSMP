@@ -1,0 +1,22 @@
+name: Nokwok
+main: me.Mattq.NokSMP.Main
+version: 1.0
+author: Mattq
+
+commands:
+  gmc:
+    description: Creative
+  gmsp:
+    description: Spectator
+  gms:
+    description: Survival
+  config:
+    description: Config
+  ping:
+    description: Ping
+  fly:
+    description: Flight
+  announce:
+    description: Announcement
+  rules:
+    description: rules
